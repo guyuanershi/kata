@@ -1,0 +1,53 @@
+package yuan
+
+/**
+ * Created by guyuanershi on 3/9/14.
+ */
+object StringCalculator {
+  val PATTEN = """//(.+)\n(.+)""".r
+  val regchars = ".$()[{|^?*+\\"
+
+  def add(numbers: String) = numbers match {
+    case "" => 0
+    case _ => sum(numbers)
+  }
+
+  def sum(numbers: String) = {
+    val intnumbers = getIntNumbers(numbers)
+    val leftnumbers = checkNumbers(intnumbers)
+    leftnumbers.reduceLeft(_+_)
+  }
+
+  def getIntNumbers(numbers: String) = numbers match {
+    case PATTEN(del, value) => splitNumbers(value, del, true)
+    case _ => splitNumbers(numbers, ",|\n")
+  }
+
+  def splitNumbers(value: String, del: String, reform: Boolean = false) = {
+    val _del = reform match {
+      case true => reformDel(del)
+      case false => del
+    }
+    value.split(_del).map(n => n.toInt)
+  }
+
+  def reformDel(del: String) = {
+    val _del = del.split("\\[|]").filter(n => n.length > 0)
+    _del.map(s => norminalize(s)).reduceLeft(_ + "|" + _)
+  }
+
+  def norminalize(s: String) = {
+    s.map(c => c match {
+      case c if regchars.indexOf(c) != -1 => "\\" + c
+      case _ => "" + c
+    }).reduceLeft(_+_)
+  }
+
+  def checkNumbers(numbers: Array[Int]) = {
+    val negs = numbers.filter(n => n < 0)
+    if (negs.length > 0)
+      throw new IllegalArgumentException("negatives are not allowed:" + negs.foldLeft("")(_ + "," + _).drop(1))
+
+    numbers.filter(n => n <= 1000)
+  }
+}
