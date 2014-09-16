@@ -1,7 +1,7 @@
 """
-Write a program to reverse the direction of a given singly-linked list. In other
-words, after the reversal all pointers should now point backwards. Your algorithm
-should take linear time.
+Write a program to reverse the direction of a given singly-linked list. 
+In other words, after the reversal all pointers should now point backwards. 
+Your algorithm should take linear time.
 """
 
 struct Node
@@ -10,23 +10,30 @@ struct Node
 	Node* next;
 };
 
-
+// using Node**, is because we will change the address of the pointer
 void revers1(struct Node** head_ref)
 {
-	struct Node* prev = NULL;
+	// prev is used to store the reverted list
+	struct Node* prev = NULL;					// C style struct declaration, C++ style needn't 'struct' keyword anymore
 	struct Node* current = *head_ref;
 	struct Node* next;
 
 	while (current != NULL)
 	{
+		// store the next
 		next = current->next;
+		// let the current link to the prev (revert)
 		current->next = prev;
+		// update prev list
 		prev = current;
+		// update current to stored next
 		current = next;
 	}
+	// change the head
 	*head_ref = prev;
 }
 
+// this is a iteration style
 void revers2(struct Node** head_ref)
 {
 	struct Node* first = *head_ref;
@@ -37,8 +44,12 @@ void revers2(struct Node** head_ref)
 
 	revers2(&rest);
 
+	// let the next->next to link to the first
+	// thus, there is loop between first and next
 	first->next->next = first;
 
+	// here we will kill the loop by breaking first to next
+	// and this will also change the list direction
 	first->next = NULL;
 
 	*head_ref = next;
@@ -46,6 +57,8 @@ void revers2(struct Node** head_ref)
 
 void push(struct Node** head_ref, int new_data)
 {
+	// malloc is going to create a space for Node, and return (void*)
+	// we cast it to (Node*)
 	struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
 	new_node->data = new_data;
 	new_node->next = (*head_ref);
